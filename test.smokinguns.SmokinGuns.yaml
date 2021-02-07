@@ -1,0 +1,41 @@
+app-id: test.smokinguns.SmokinGuns
+runtime: org.freedesktop.Platform
+runtime-version: '20.08'
+sdk: org.freedesktop.Sdk
+command: /app/smokinguns/smokinguns.x86_64
+finish-args:
+  - --socket=wayland
+  - --socket=x11
+  - --socket=pulseaudio
+  - --share=network
+  - --filesystem=host
+  - --share=ipc
+  - --talk-name=org.freedesktop.ScreenSaver
+  - --device=dri
+add-extensions:
+  org.freedesktop.Platform.GL.default:
+    directory: lib/GL
+modules:
+  - glu-9.json
+  - SDL-1.2.15.json
+  - name: assets
+    buildsystem: simple
+    build-commands:
+      - mkdir /app/smokinguns
+      - cp -r baseq3/ /app/smokinguns/baseq3
+      - cp -r smokinguns/ /app/smokinguns/smokinguns
+    sources:
+      - type: archive
+        url: https://www.smokin-guns.org/downloads/Smokin_Guns_1.1.zip
+        sha1: fe03a21480dbc78731c9e72cc3353973b7553f3e
+  - name: SmokinGuns
+    buildsystem: simple
+    build-commands:
+      - make
+      - COPYDIR=/app/smokinguns make copyfiles
+    sources:
+      - type: git
+        url: https://github.com/smokin-guns/SmokinGuns.git
+        branch: ioq3-synchro
+      - type: patch
+        path: 0001-Workaround-for-build-failure.patch
